@@ -36,8 +36,8 @@
     </dependency>
     <dependency>
         <groupId>com.helger</groupId>
-        <artifactId>ph-pdf-layout4</artifactId>
-        <version>5.2.3</version>
+        <artifactId>ph-pdf-layout</artifactId>
+        <version>5.2.1</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
