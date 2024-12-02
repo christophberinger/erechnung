@@ -2,11 +2,8 @@ package de.cb.erechnung.util;
 
 import de.cb.erechnung.model.Rechnung;
 import org.mustangproject.ZUGFeRD.IExportableTransaction;
-import org.mustangproject.ZUGFeRD.model.DocumentCodeTypeConstants;
-import org.mustangproject.ZUGFeRD.model.TradeParty;
-import com.helger.pdflayout4.spec.FontSpec;
+import org.mustangproject.ZUGFeRD.ZUGFeRDExporterFromA1;
 
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -14,10 +11,6 @@ import java.util.Date;
 public class ZugferdUtil {
 
     public static void createZugferdInvoice(OutputStream outputStream, Rechnung rechnung) throws Exception {
-        // Create a basic invoice with minimum required fields
-        TradeParty recipient = new TradeParty();
-        recipient.setName("Customer Name");
-        
         IExportableTransaction transaction = new IExportableTransaction() {
             @Override
             public String getNumber() {
@@ -30,21 +23,25 @@ public class ZugferdUtil {
             }
 
             @Override
+            public Date getDeliveryDate() {
+                return getDate(); // Using invoice date as delivery date
+            }
+
+            @Override
             public BigDecimal getTotal() {
                 return rechnung.getBetrag();
             }
 
             @Override
-            public TradeParty getRecipient() {
-                return recipient;
+            public String getCurrency() {
+                return "EUR"; // Default to EUR
             }
         };
 
         // Create PDF with ZUGFeRD data
-        org.mustangproject.ZUGFeRD.ZUGFeRDExporterFromA1 exporter = 
-            new org.mustangproject.ZUGFeRD.ZUGFeRDExporterFromA1()
-                .setProducer("ERechnung System")
-                .setCreator(System.getProperty("user.name"));
+        ZUGFeRDExporterFromA1 exporter = new ZUGFeRDExporterFromA1()
+            .setProducer("ERechnung System")
+            .setCreator(System.getProperty("user.name"));
 
         exporter.setTransaction(transaction);
         exporter.export(outputStream);
