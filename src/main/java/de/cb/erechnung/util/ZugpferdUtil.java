@@ -1,40 +1,77 @@
 package de.cb.erechnung.util;
 
 import de.cb.erechnung.model.Rechnung;
-import io.konik.InvoiceTransformer;
-import io.konik.PdfHandler;
-import io.konik.zugferd.Invoice;
-import io.konik.zugferd.entity.Header;
-import io.konik.zugferd.entity.trade.item.Item;
-import io.konik.zugferd.unqualified.Amount;
+import org.mustangproject.ZUGFeRD.IZUGFeRDExportableTransaction;
+import org.mustangproject.ZUGFeRD.ZUGFeRDExporterFromA1;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.util.Date;
 
 public class ZugferdUtil {
 
     public static void createZugferdInvoice(OutputStream outputStream, Rechnung rechnung) throws Exception {
-        Invoice invoice = new Invoice();
-        Header header = new Header();
-        header.setInvoiceNumber(rechnung.getRechnungsNummer());
-        invoice.setHeader(header);
+        IZUGFeRDExportableTransaction transaction = new IZUGFeRDExportableTransaction() {
+            @Override
+            public String getNumber() {
+                return rechnung.getRechnungsNummer();
+            }
 
-        Item item = new Item();
-        item.setGlobalId(new Item.Builder()
-                .addSchemeId("0160")
-                .addSchemeId(rechnung.getId().toString())
-                .build());
-        item.setName("Beispielprodukt");
-        item.setGrossPrice(new Amount(rechnung.getBetrag()));
+            @Override
+            public Date getDate() {
+                return new Date();
+            }
 
-        invoice.addItem(item);
+            @Override
+            public String getOwnCountry() {
+                return "DE";
+            }
 
-        InvoiceTransformer transformer = new InvoiceTransformer();
-        byte[] zugferdXml = transformer.fromModel(invoice);
+            @Override
+            public String getCurrency() {
+                return "EUR";
+            }
 
-        PdfHandler handler = new PdfHandler();
+            @Override
+            public String getOwnVATID() {
+                return "DE123456789"; // Replace with your company's VAT ID
+            }
+
+            @Override
+            public String getOwnStreet() {
+                return "Musterstraße 1";
+            }
+
+            @Override
+            public String getOwnZIP() {
+                return "12345";
+            }
+
+            @Override
+            public String getOwnLocation() {
+                return "Musterstadt";
+            }
+
+            @Override
+            public String getOwnOrganisationName() {
+                return "Musterfirma GmbH";
+            }
+
+            @Override
+            public BigDecimal getTotal() {
+                return BigDecimal.valueOf(rechnung.getBetrag());
+            }
+        };
+
         InputStream templatePdf = ZugferdUtil.class.getResourceAsStream("/template.pdf");
-        handler.appendZugferdXMLToPackage(templatePdf, zugferdXml, outputStream);
+        ZUGFeRDExporterFromA1 exporter = new ZUGFeRDExporterFromA1()
+                .setProducer("ERechnung System")
+                .setCreator(System.getProperty("user.name"))
+                .load(templatePdf);
+
+        exporter.setTransaction(transaction);
+        exporter.export(outputStream);
     }
 }
 RechnungController erstellen: Erstellen Sie eine neue Datei unter src/main/java/de/cb/erechnung/controller/RechnungController.java:
