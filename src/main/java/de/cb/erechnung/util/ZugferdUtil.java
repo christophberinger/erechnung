@@ -1,11 +1,11 @@
 package de.cb.erechnung.util;
 
 import de.cb.erechnung.model.Rechnung;
-import org.mustangproject.ZUGFeRD.IExportableTransaction;
-import org.mustangproject.ZUGFeRD.ZUGFeRDExporterFromA1;
+import org.mustangproject.ZUGFeRD.*;
 
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class ZugferdUtil {
@@ -40,6 +40,11 @@ public class ZugferdUtil {
             @Override
             public IZUGFeRDExportableContact getRecipient() {
                 return null; // TODO: Implement if recipient information is needed
+            }
+
+            @Override
+            public ArrayList<IZUGFeRDExportableItem> getZFItems() {
+                return new ArrayList<>(); // TODO: Add line items if needed
             }
         };
 
