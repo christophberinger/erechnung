@@ -22,13 +22,13 @@ public class ZugferdUtil {
                 return java.sql.Date.valueOf(rechnung.getDatum());
             }
 
-            @Override
+            @Override 
             public Date getDeliveryDate() {
                 return getIssueDate(); // Using invoice date as delivery date
             }
 
             @Override
-            public BigDecimal getTotalAmount() {
+            public BigDecimal getAmount() {
                 return rechnung.getBetrag();
             }
 
