@@ -2,7 +2,7 @@ package de.cb.erechnung.util;
 
 import de.cb.erechnung.model.Rechnung;
 import org.mustangproject.ZUGFeRD.IExportableTransaction;
-import com.klst.zugferd.ZUGFeRDExporter;
+import org.mustangproject.ZUGFeRD.ZUGFeRDExporter;
 
 import java.io.InputStream;
 import java.io.OutputStream;
