@@ -4,12 +4,31 @@ import {
   Button, 
   Grid, 
   Paper, 
-  Typography 
+  Typography,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import { invoiceService } from '../services/invoiceService';
 
 export const InvoiceForm = () => {
-  const [invoice, setInvoice] = useState({
+  const initialState = {
+    rechnungsNummer: '',
+    datum: new Date().toISOString().split('T')[0],
+    betrag: '',
+    waehrung: 'EUR',
+    lieferantName: '',
+    kundenName: ''
+  };
+
+  const [invoice, setInvoice] = useState(initialState);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({...prev, open: false}));
     rechnungsNummer: '',
     datum: new Date().toISOString().split('T')[0],
     betrag: '',
@@ -26,14 +45,24 @@ export const InvoiceForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    invoiceService.createInvoice(invoice)
-      .then(response => {
-        console.log('Invoice created:', response.data);
-        // Reset form or navigate
-      })
-      .catch(error => console.error('Error creating invoice:', error));
+    try {
+      const response = await invoiceService.createInvoice(invoice);
+      setSnackbar({
+        open: true,
+        message: 'Rechnung erfolgreich gespeichert',
+        severity: 'success'
+      });
+      setInvoice(initialState); // Reset form
+    } catch (error) {
+      console.error('Error creating invoice:', error);
+      setSnackbar({
+        open: true,
+        message: 'Fehler beim Speichern der Rechnung',
+        severity: 'error'
+      });
+    }
   };
 
   return (
@@ -94,5 +123,17 @@ export const InvoiceForm = () => {
         </Grid>
       </form>
     </Paper>
+    <Snackbar 
+      open={snackbar.open} 
+      autoHideDuration={6000} 
+      onClose={handleCloseSnackbar}
+    >
+      <Alert 
+        onClose={handleCloseSnackbar} 
+        severity={snackbar.severity}
+      >
+        {snackbar.message}
+      </Alert>
+    </Snackbar>
   );
 };
