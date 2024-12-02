@@ -38,13 +38,13 @@ public class ZugferdUtil {
             }
 
             @Override
-            public IZUGFeRDExportableContact getRecipient() {
+            public IZUGFeRDExportableTradeParty getRecipient() {
                 return null; // TODO: Implement if recipient information is needed
             }
 
             @Override
-            public ArrayList<IZUGFeRDExportableItem> getZFItems() {
-                return new ArrayList<>(); // TODO: Add line items if needed
+            public IZUGFeRDExportableItem[] getZFItems() {
+                return new IZUGFeRDExportableItem[0]; // TODO: Add line items if needed
             }
         };
 
