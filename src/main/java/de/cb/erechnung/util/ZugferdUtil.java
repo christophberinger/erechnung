@@ -23,8 +23,8 @@ public class ZugferdUtil {
             }
 
             @Override
-            public Date getDueDate() {
-                return getIssueDate(); // Using invoice date as due date
+            public Date getDeliveryDate() {
+                return getIssueDate(); // Using invoice date as delivery date
             }
 
             @Override
