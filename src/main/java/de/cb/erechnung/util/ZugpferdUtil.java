@@ -1,8 +1,8 @@
 package de.cb.erechnung.util;
 
 import de.cb.erechnung.model.Rechnung;
-import org.mustangproject.ZUGFeRD.IZUGFeRDExportableTransaction;
-import org.mustangproject.ZUGFeRD.ZUGFeRDExporterFromA1;
+import com.mustangproject.ZUGFeRD.IExportableTransaction;
+import com.mustangproject.ZUGFeRD.ZUGFeRDExporterFromA1;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -12,7 +12,7 @@ import java.util.Date;
 public class ZugferdUtil {
 
     public static void createZugferdInvoice(OutputStream outputStream, Rechnung rechnung) throws Exception {
-        IZUGFeRDExportableTransaction transaction = new IZUGFeRDExportableTransaction() {
+        IExportableTransaction transaction = new IExportableTransaction() {
             @Override
             public String getNumber() {
                 return rechnung.getRechnungsNummer();
