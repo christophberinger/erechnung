@@ -18,17 +18,17 @@ public class ZugferdUtil {
             }
 
             @Override
-            public Date getDate() {
+            public Date getIssueDate() {
                 return java.sql.Date.valueOf(rechnung.getDatum());
             }
 
             @Override
-            public Date getDeliveryDate() {
-                return getDate(); // Using invoice date as delivery date
+            public Date getDueDate() {
+                return getIssueDate(); // Using invoice date as due date
             }
 
             @Override
-            public BigDecimal getTotal() {
+            public BigDecimal getTotalAmount() {
                 return rechnung.getBetrag();
             }
 
