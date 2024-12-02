@@ -45,6 +45,12 @@
       <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
+    <!-- Frontend Maven Plugin -->
+    <dependency>
+      <groupId>com.github.eirslett</groupId>
+      <artifactId>frontend-maven-plugin</artifactId>
+      <version>1.12.1</version>
+    </dependency>
   </dependencies>
 
   <build>
