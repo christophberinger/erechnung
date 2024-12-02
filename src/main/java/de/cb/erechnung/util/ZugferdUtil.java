@@ -12,7 +12,7 @@ import java.util.Date;
 public class ZugferdUtil {
 
     public static void createZugferdInvoice(OutputStream outputStream, Rechnung rechnung) throws Exception {
-        IZUGFeRDExportableTransaction transaction = new IZUGFeRDExportableTransaction() {
+        IExportableTransaction transaction = new IExportableTransaction() {
             @Override
             public String getNumber() {
                 return rechnung.getRechnungsNummer();
