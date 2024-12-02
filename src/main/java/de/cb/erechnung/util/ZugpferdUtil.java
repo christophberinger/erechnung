@@ -1,8 +1,8 @@
 package de.cb.erechnung.util;
 
 import de.cb.erechnung.model.Rechnung;
-import org.mustangproject.ZUGFeRD.IZUGFeRDExportableTransaction;
-import org.mustangproject.ZUGFeRD.ZUGFeRDExporterFromA1;
+import org.mustangproject.ZUGFeRD.IExportableTransaction;
+import org.mustangproject.ZUGFeRD.ZUGFeRDExporter;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -60,12 +60,12 @@ public class ZugferdUtil {
 
             @Override
             public BigDecimal getTotal() {
-                return BigDecimal.valueOf(rechnung.getBetrag());
+                return rechnung.getBetrag();
             }
         };
 
         InputStream templatePdf = ZugferdUtil.class.getResourceAsStream("/template.pdf");
-        ZUGFeRDExporterFromA1 exporter = new ZUGFeRDExporterFromA1()
+        ZUGFeRDExporter exporter = new ZUGFeRDExporter()
                 .setProducer("ERechnung System")
                 .setCreator(System.getProperty("user.name"))
                 .load(templatePdf);
