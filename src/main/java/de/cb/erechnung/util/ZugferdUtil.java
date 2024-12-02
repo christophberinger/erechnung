@@ -28,6 +28,15 @@ public class ZugferdUtil {
             }
 
             @Override
+            public Date getDueDate() {
+                // Set due date to 30 days after issue date
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(getIssueDate());
+                calendar.add(Calendar.DAY_OF_MONTH, 30);
+                return calendar.getTime();
+            }
+
+            @Override
             public BigDecimal getAmount() {
                 return rechnung.getBetrag();
             }
@@ -35,6 +44,16 @@ public class ZugferdUtil {
             @Override
             public String getCurrency() {
                 return "EUR"; // Default to EUR
+            }
+
+            @Override
+            public IZUGFeRDTradeSettlement[] getTradeSettlement() {
+                return new IZUGFeRDTradeSettlement[0]; // No specific trade settlement info for now
+            }
+
+            @Override
+            public String getReferenceNumber() {
+                return rechnung.getRechnungsNummer(); // Using invoice number as reference
             }
 
             @Override
