@@ -36,6 +36,11 @@ public class ZugferdUtil {
             public String getCurrency() {
                 return "EUR"; // Default to EUR
             }
+
+            @Override
+            public IZUGFeRDExportableContact getRecipient() {
+                return null; // TODO: Implement if recipient information is needed
+            }
         };
 
         // Create PDF with ZUGFeRD data
