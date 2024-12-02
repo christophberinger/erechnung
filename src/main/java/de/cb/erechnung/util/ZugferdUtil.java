@@ -6,6 +6,7 @@ import org.mustangproject.ZUGFeRD.*;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 public class ZugferdUtil {
@@ -34,11 +35,6 @@ public class ZugferdUtil {
                 calendar.setTime(getIssueDate());
                 calendar.add(Calendar.DAY_OF_MONTH, 30);
                 return calendar.getTime();
-            }
-
-            @Override
-            public BigDecimal getAmount() {
-                return rechnung.getBetrag();
             }
 
             @Override
