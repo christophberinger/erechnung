@@ -22,9 +22,9 @@ public class ZugferdUtil {
                 return java.sql.Date.valueOf(rechnung.getDatum());
             }
 
-            @Override 
-            public Date getDueDate() {
-                return getIssueDate(); // Using invoice date as due date
+            @Override
+            public Date getDeliveryDate() {
+                return getIssueDate(); // Using invoice date as delivery date
             }
 
             @Override
