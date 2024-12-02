@@ -74,9 +74,6 @@ public class ZugferdUtil {
         exporter.export(outputStream);
     }
 }
-RechnungController erstellen: Erstellen Sie eine neue Datei unter src/main/java/de/cb/erechnung/controller/RechnungController.java:
-
-package de.cb.erechnung.controller;
 
 import de.cb.erechnung.model.Rechnung;
 import de.cb.erechnung.repository.RechnungRepository;
