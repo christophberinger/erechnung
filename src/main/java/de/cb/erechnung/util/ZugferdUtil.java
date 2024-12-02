@@ -2,7 +2,7 @@ package de.cb.erechnung.util;
 
 import de.cb.erechnung.model.Rechnung;
 import org.mustangproject.ZUGFeRD.IExportableTransaction;
-import org.mustangproject.ZUGFeRD.ZUGFeRDExporter;
+import com.klst.zugferd.ZUGFeRDExporter;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -20,42 +20,12 @@ public class ZugferdUtil {
 
             @Override
             public Date getDate() {
-                return new Date();
+                return java.sql.Date.valueOf(rechnung.getDatum());
             }
 
             @Override
-            public String getOwnCountry() {
-                return "DE";
-            }
-
-            @Override
-            public String getCurrency() {
-                return "EUR";
-            }
-
-            @Override
-            public String getOwnVATID() {
-                return "DE123456789"; // Replace with your company's VAT ID
-            }
-
-            @Override
-            public String getOwnStreet() {
-                return "Musterstraße 1";
-            }
-
-            @Override
-            public String getOwnZIP() {
-                return "12345";
-            }
-
-            @Override
-            public String getOwnLocation() {
-                return "Musterstadt";
-            }
-
-            @Override
-            public String getOwnOrganisationName() {
-                return "Musterfirma GmbH";
+            public Date getDeliveryDate() {
+                return getDate(); // Using invoice date as delivery date
             }
 
             @Override

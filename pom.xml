@@ -30,9 +30,9 @@
       <version>42.2.24</version>
     </dependency>
     <dependency>
-      <groupId>org.mustangproject</groupId>
-      <artifactId>library</artifactId>
-      <version>2.2.0</version>
+        <groupId>com.klst</groupId>
+        <artifactId>zugferd</artifactId>
+        <version>2.0.0</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
