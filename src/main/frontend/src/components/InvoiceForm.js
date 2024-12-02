@@ -29,13 +29,7 @@ export const InvoiceForm = () => {
 
   const handleCloseSnackbar = () => {
     setSnackbar(prev => ({...prev, open: false}));
-    rechnungsNummer: '',
-    datum: new Date().toISOString().split('T')[0],
-    betrag: '',
-    waehrung: 'EUR',
-    lieferantName: '',
-    kundenName: ''
-  });
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -66,7 +60,8 @@ export const InvoiceForm = () => {
   };
 
   return (
-    <Paper style={{ padding: 16 }}>
+    <div>
+      <Paper style={{ padding: 16 }}>
       <Typography variant="h6">Neue Rechnung</Typography>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
@@ -122,8 +117,8 @@ export const InvoiceForm = () => {
           </Grid>
         </Grid>
       </form>
-    </Paper>
-    <Snackbar 
+      </Paper>
+      <Snackbar 
       open={snackbar.open} 
       autoHideDuration={6000} 
       onClose={handleCloseSnackbar}
@@ -134,6 +129,7 @@ export const InvoiceForm = () => {
       >
         {snackbar.message}
       </Alert>
-    </Snackbar>
+      </Snackbar>
+    </div>
   );
 };
