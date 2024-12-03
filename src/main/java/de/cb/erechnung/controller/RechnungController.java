@@ -36,6 +36,23 @@ public class RechnungController {
     @PostMapping
     public ResponseEntity<?> createRechnung(@RequestBody Rechnung rechnung) {
         try {
+            // Basic validation
+            if (rechnung.getRechnungsNummer() == null || rechnung.getRechnungsNummer().trim().isEmpty()) {
+                return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse("Rechnungsnummer ist erforderlich"));
+            }
+            if (rechnung.getBetrag() == null || rechnung.getBetrag().compareTo(BigDecimal.ZERO) <= 0) {
+                return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse("Betrag muss größer als 0 sein"));
+            }
+            if (rechnung.getDatum() == null) {
+                return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse("Rechnungsdatum ist erforderlich"));
+            }
+            
             Rechnung saved = rechnungRepository.save(rechnung);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
         } catch (Exception e) {

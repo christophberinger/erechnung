@@ -17,7 +17,19 @@ export const InvoiceForm = () => {
     betrag: '',
     waehrung: 'EUR',
     lieferantName: '',
-    kundenName: ''
+    lieferantStrasse: '',
+    lieferantPlz: '',
+    lieferantOrt: '',
+    lieferantLand: 'DE',
+    lieferantUstId: '',
+    kundenName: '',
+    kundenStrasse: '',
+    kundenPlz: '',
+    kundenOrt: '',
+    kundenLand: 'DE',
+    kundenUstId: '',
+    faelligkeitsDatum: '',
+    zahlungsReferenz: ''
   };
 
   const [invoice, setInvoice] = useState(initialState);
@@ -42,7 +54,16 @@ export const InvoiceForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await invoiceService.createInvoice(invoice);
+      // Format data before sending
+      const formattedInvoice = {
+        ...invoice,
+        betrag: parseFloat(invoice.betrag),
+        datum: new Date(invoice.datum).toISOString().split('T')[0],
+        faelligkeitsDatum: invoice.faelligkeitsDatum ? 
+          new Date(invoice.faelligkeitsDatum).toISOString().split('T')[0] : null
+      };
+      
+      const response = await invoiceService.createInvoice(formattedInvoice);
       setSnackbar({
         open: true,
         message: 'Rechnung erfolgreich gespeichert',
