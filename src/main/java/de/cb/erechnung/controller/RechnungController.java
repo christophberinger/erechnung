@@ -37,6 +37,8 @@ public class RechnungController {
     @PostMapping
     public ResponseEntity<?> createRechnung(@RequestBody Rechnung rechnung) {
         try {
+            // Log incoming request
+            System.out.println("Received invoice creation request: " + rechnung.getRechnungsNummer());
             // Validate required fields
             if (rechnung.getRechnungsNummer() == null || rechnung.getRechnungsNummer().trim().isEmpty()) {
                 return ResponseEntity
@@ -75,9 +77,15 @@ public class RechnungController {
             Rechnung saved = rechnungRepository.save(rechnung);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
         } catch (Exception e) {
+            // Log the full stack trace
+            e.printStackTrace();
+            
+            String errorMessage = "Fehler beim Speichern der Rechnung: " + e.getMessage();
+            System.err.println(errorMessage);
+            
             return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("Fehler beim Speichern der Rechnung: " + e.getMessage()));
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(errorMessage));
         }
     }
 

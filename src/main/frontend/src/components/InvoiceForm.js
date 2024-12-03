@@ -75,7 +75,9 @@ export const InvoiceForm = () => {
         waehrung: invoice.waehrung || 'EUR'
       };
       
+      console.log('Submitting invoice:', formattedInvoice);
       const response = await invoiceService.createInvoice(formattedInvoice);
+      console.log('Server response:', response);
       setSnackbar({
         open: true,
         message: 'Rechnung erfolgreich gespeichert',

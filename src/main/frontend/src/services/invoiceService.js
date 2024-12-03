@@ -34,6 +34,24 @@ const handleError = (error) => {
   if (error.code === 'ERR_CONNECTION_REFUSED') {
     throw new Error('Server nicht erreichbar. Bitte überprüfen Sie, ob der Backend-Server läuft.');
   }
+  
+  // Handle specific HTTP status codes
+  if (error.response) {
+    const status = error.response.status;
+    const message = error.response.data?.message || error.response.data;
+    
+    switch (status) {
+      case 500:
+        throw new Error(`Interner Serverfehler: ${message}`);
+      case 400:
+        throw new Error(`Ungültige Eingabe: ${message}`);
+      case 404:
+        throw new Error('Ressource nicht gefunden');
+      default:
+        throw new Error(`Fehler: ${message || error.message}`);
+    }
+  }
+  
   throw error;
 };
 
