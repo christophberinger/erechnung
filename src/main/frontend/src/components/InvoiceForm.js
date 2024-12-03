@@ -51,9 +51,11 @@ export const InvoiceForm = () => {
       setInvoice(initialState); // Reset form
     } catch (error) {
       console.error('Error creating invoice:', error);
+      const errorMessage = error.response?.data?.message || 
+                          'Fehler beim Speichern der Rechnung. Bitte überprüfen Sie Ihre Eingaben.';
       setSnackbar({
         open: true,
-        message: 'Fehler beim Speichern der Rechnung',
+        message: errorMessage,
         severity: 'error'
       });
     }

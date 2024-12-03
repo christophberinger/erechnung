@@ -34,9 +34,27 @@ public class RechnungController {
     }
 
     @PostMapping
-    public ResponseEntity<Rechnung> createRechnung(@RequestBody Rechnung rechnung) {
-        Rechnung saved = rechnungRepository.save(rechnung);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    public ResponseEntity<?> createRechnung(@RequestBody Rechnung rechnung) {
+        try {
+            Rechnung saved = rechnungRepository.save(rechnung);
+            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        } catch (Exception e) {
+            return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse("Fehler beim Speichern der Rechnung: " + e.getMessage()));
+        }
+    }
+
+    private static class ErrorResponse {
+        private String message;
+        
+        public ErrorResponse(String message) {
+            this.message = message;
+        }
+        
+        public String getMessage() {
+            return message;
+        }
     }
 
     @PutMapping("/{id}")
