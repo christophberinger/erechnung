@@ -54,6 +54,17 @@ export const InvoiceForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Check server connection first
+      const isConnected = await invoiceService.checkConnection();
+      if (!isConnected) {
+        setSnackbar({
+          open: true,
+          message: 'Server nicht erreichbar. Bitte überprüfen Sie die Verbindung zum Backend.',
+          severity: 'error'
+        });
+        return;
+      }
+
       // Format data before sending
       const formattedInvoice = {
         ...invoice,
@@ -73,7 +84,8 @@ export const InvoiceForm = () => {
       setInvoice(initialState); // Reset form
     } catch (error) {
       console.error('Error creating invoice:', error);
-      const errorMessage = error.response?.data?.message || 
+      const errorMessage = error.message || 
+                          error.response?.data?.message || 
                           'Fehler beim Speichern der Rechnung. Bitte überprüfen Sie Ihre Eingaben.';
       setSnackbar({
         open: true,
