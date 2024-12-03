@@ -58,9 +58,10 @@ const handleError = (error) => {
 export const invoiceService = {
   checkConnection: async () => {
     try {
-      await axiosInstance.get('');
+      await axiosInstance.get('/check');
       return true;
     } catch (error) {
+      console.error('Connection check failed:', error);
       return false;
     }
   },

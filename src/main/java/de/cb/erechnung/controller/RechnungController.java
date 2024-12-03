@@ -22,9 +22,20 @@ public class RechnungController {
     @Autowired
     private RechnungRepository rechnungRepository;
 
-    @GetMapping
-    public List<Rechnung> getAllRechnungen() {
-        return rechnungRepository.findAll();
+    @GetMapping("")
+    public ResponseEntity<List<Rechnung>> getAllRechnungen() {
+        try {
+            List<Rechnung> rechnungen = rechnungRepository.findAll();
+            return ResponseEntity.ok(rechnungen);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity<Void> checkConnection() {
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}")
