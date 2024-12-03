@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api/invoices/';
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000; // 1 second
+const MAX_RETRIES = 5;
+const RETRY_DELAY = 2000; // 2 seconds
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -30,22 +30,29 @@ axiosInstance.interceptors.response.use(
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const withRetry = async (operation, retries = MAX_RETRIES) => {
+  let lastError;
   for (let i = 0; i < retries; i++) {
     try {
       return await operation();
     } catch (error) {
-      if (i === retries - 1) throw error;
+      lastError = error;
       
-      // Check if server is unreachable
-      if (error.code === 'ERR_CONNECTION_REFUSED') {
-        console.warn(`Connection refused, retrying in ${RETRY_DELAY}ms... (Attempt ${i + 1}/${retries})`);
-        await sleep(RETRY_DELAY);
-        continue;
+      // Only retry on connection errors
+      if (error.code === 'ERR_CONNECTION_REFUSED' || 
+          error.code === 'ECONNABORTED' ||
+          error.code === 'ERR_NETWORK') {
+        console.warn(`Connection attempt ${i + 1}/${retries} failed: ${error.message}`);
+        if (i < retries - 1) {
+          console.warn(`Retrying in ${RETRY_DELAY}ms...`);
+          await sleep(RETRY_DELAY * (i + 1)); // Exponential backoff
+          continue;
+        }
       }
       
       throw error;
     }
   }
+  throw lastError;
 };
 
 const handleError = (error) => {
@@ -76,10 +83,14 @@ const handleError = (error) => {
 export const invoiceService = {
   checkConnection: async () => {
     try {
-      await axiosInstance.get('/check');
+      await withRetry(() => axiosInstance.get('/check'));
       return true;
     } catch (error) {
       console.error('Connection check failed:', error);
+      // Throw specific error for connection issues
+      if (error.code === 'ERR_CONNECTION_REFUSED') {
+        throw new Error('Der Server ist nicht erreichbar. Bitte stellen Sie sicher, dass der Backend-Server läuft und erreichbar ist.');
+      }
       return false;
     }
   },
