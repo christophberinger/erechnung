@@ -93,8 +93,13 @@ export const invoiceService = {
       });
       
       const response = await instance.get('/check');
-      console.log('Connection check successful:', response.status);
-      return true;
+      console.log('Connection check response:', response.data);
+      if (response.data && response.data.status === 'ok') {
+        console.log('Connection check successful:', response.data.message);
+        return true;
+      } else {
+        throw new Error(response.data?.message || 'Unexpected server response');
+      }
     } catch (error) {
       console.error('Connection check failed:', {
         code: error.code,

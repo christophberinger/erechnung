@@ -37,22 +37,27 @@ public class RechnungController {
     public ResponseEntity<?> checkConnection() {
         try {
             // Check if database is accessible
-            rechnungRepository.count();
+            long count = rechnungRepository.count();
+            java.util.Map<String, Object> response = new java.util.HashMap<>();
+            response.put("status", "ok");
+            response.put("timestamp", new java.util.Date());
+            response.put("message", "Backend server is running and database is accessible");
+            response.put("recordCount", count);
+            
             return ResponseEntity.ok()
-                .body(Map.of(
-                    "status", "ok",
-                    "timestamp", new java.util.Date(),
-                    "message", "Backend server is running and database is accessible"
-                ));
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
         } catch (Exception e) {
             e.printStackTrace();
+            java.util.Map<String, Object> errorResponse = new java.util.HashMap<>();
+            errorResponse.put("status", "error");
+            errorResponse.put("timestamp", new java.util.Date());
+            errorResponse.put("message", "Database connection error: " + e.getMessage());
+            
             return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of(
-                    "status", "error",
-                    "timestamp", new java.util.Date(),
-                    "message", "Database connection error: " + e.getMessage()
-                ));
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(errorResponse);
         }
     }
 
