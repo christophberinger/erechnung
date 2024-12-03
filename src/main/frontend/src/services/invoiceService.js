@@ -1,16 +1,18 @@
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api/invoices/';
-const MAX_RETRIES = 5;
-const RETRY_DELAY = 2000; // 2 seconds
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second
+const CONNECTION_TIMEOUT = 5000; // 5 seconds
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000, // 10 seconds
+  timeout: CONNECTION_TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
-  }
+  },
+  validateStatus: status => status >= 200 && status < 300
 });
 
 // Add response interceptor
@@ -83,15 +85,20 @@ const handleError = (error) => {
 export const invoiceService = {
   checkConnection: async () => {
     try {
-      await withRetry(() => axiosInstance.get('/check'));
+      const instance = axios.create({
+        baseURL: API_BASE_URL,
+        timeout: CONNECTION_TIMEOUT,
+        validateStatus: status => status >= 200 && status < 300
+      });
+      
+      await instance.get('/check');
       return true;
     } catch (error) {
       console.error('Connection check failed:', error);
-      // Throw specific error for connection issues
-      if (error.code === 'ERR_CONNECTION_REFUSED') {
-        throw new Error('Der Server ist nicht erreichbar. Bitte stellen Sie sicher, dass der Backend-Server läuft und erreichbar ist.');
-      }
-      return false;
+      const message = error.code === 'ERR_CONNECTION_REFUSED' || error.code === 'ECONNABORTED'
+        ? 'Der Server ist nicht erreichbar. Bitte stellen Sie sicher, dass der Backend-Server läuft und erreichbar ist.'
+        : `Verbindungsfehler: ${error.message}`;
+      throw new Error(message);
     }
   },
 
