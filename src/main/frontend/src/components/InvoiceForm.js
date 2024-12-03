@@ -57,7 +57,7 @@ export const InvoiceForm = () => {
       // Format data before sending
       const formattedInvoice = {
         ...invoice,
-        betrag: parseFloat(invoice.betrag),
+        betrag: Number(invoice.betrag).toFixed(2),
         datum: new Date(invoice.datum).toISOString().split('T')[0],
         faelligkeitsDatum: invoice.faelligkeitsDatum ? 
           new Date(invoice.faelligkeitsDatum).toISOString().split('T')[0] : null
@@ -115,6 +115,7 @@ export const InvoiceForm = () => {
               label="Betrag"
               name="betrag"
               type="number"
+              inputProps={{ step: "0.01", min: "0" }}
               value={invoice.betrag}
               onChange={handleChange}
               required
@@ -123,12 +124,148 @@ export const InvoiceForm = () => {
           <Grid item xs={6}>
             <TextField
               fullWidth
-              label="Lieferant"
+              label="Währung"
+              name="waehrung"
+              value={invoice.waehrung}
+              onChange={handleChange}
+              required
+            />
+          </Grid>
+          
+          {/* Lieferant Details */}
+          <Grid item xs={12}>
+            <Typography variant="subtitle1">Lieferant Details</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label="Name"
               name="lieferantName"
               value={invoice.lieferantName}
               onChange={handleChange}
+              required
             />
           </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label="Straße"
+              name="lieferantStrasse"
+              value={invoice.lieferantStrasse}
+              onChange={handleChange}
+              required
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              fullWidth
+              label="PLZ"
+              name="lieferantPlz"
+              value={invoice.lieferantPlz}
+              onChange={handleChange}
+              required
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              fullWidth
+              label="Ort"
+              name="lieferantOrt"
+              value={invoice.lieferantOrt}
+              onChange={handleChange}
+              required
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              fullWidth
+              label="USt-ID"
+              name="lieferantUstId"
+              value={invoice.lieferantUstId}
+              onChange={handleChange}
+            />
+          </Grid>
+
+          {/* Kunde Details */}
+          <Grid item xs={12}>
+            <Typography variant="subtitle1">Kunde Details</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label="Name"
+              name="kundenName"
+              value={invoice.kundenName}
+              onChange={handleChange}
+              required
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label="Straße"
+              name="kundenStrasse"
+              value={invoice.kundenStrasse}
+              onChange={handleChange}
+              required
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              fullWidth
+              label="PLZ"
+              name="kundenPlz"
+              value={invoice.kundenPlz}
+              onChange={handleChange}
+              required
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              fullWidth
+              label="Ort"
+              name="kundenOrt"
+              value={invoice.kundenOrt}
+              onChange={handleChange}
+              required
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              fullWidth
+              label="USt-ID"
+              name="kundenUstId"
+              value={invoice.kundenUstId}
+              onChange={handleChange}
+            />
+          </Grid>
+
+          {/* Payment Details */}
+          <Grid item xs={12}>
+            <Typography variant="subtitle1">Zahlungsdetails</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              type="date"
+              label="Fälligkeitsdatum"
+              name="faelligkeitsDatum"
+              value={invoice.faelligkeitsDatum}
+              onChange={handleChange}
+              InputLabelProps={{ shrink: true }}
+              required
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label="Zahlungsreferenz"
+              name="zahlungsReferenz"
+              value={invoice.zahlungsReferenz}
+              onChange={handleChange}
+            />
+          </Grid>
+
           <Grid item xs={12}>
             <Button 
               type="submit" 
