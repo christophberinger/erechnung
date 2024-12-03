@@ -34,8 +34,26 @@ public class RechnungController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<Void> checkConnection() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> checkConnection() {
+        try {
+            // Check if database is accessible
+            rechnungRepository.count();
+            return ResponseEntity.ok()
+                .body(Map.of(
+                    "status", "ok",
+                    "timestamp", new java.util.Date(),
+                    "message", "Backend server is running and database is accessible"
+                ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of(
+                    "status", "error",
+                    "timestamp", new java.util.Date(),
+                    "message", "Database connection error: " + e.getMessage()
+                ));
+        }
     }
 
     @GetMapping("/{id}")

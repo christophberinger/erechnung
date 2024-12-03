@@ -85,19 +85,35 @@ const handleError = (error) => {
 export const invoiceService = {
   checkConnection: async () => {
     try {
+      console.log('Checking connection to:', API_BASE_URL);
       const instance = axios.create({
         baseURL: API_BASE_URL,
         timeout: CONNECTION_TIMEOUT,
         validateStatus: status => status >= 200 && status < 300
       });
       
-      await instance.get('/check');
+      const response = await instance.get('/check');
+      console.log('Connection check successful:', response.status);
       return true;
     } catch (error) {
-      console.error('Connection check failed:', error);
-      const message = error.code === 'ERR_CONNECTION_REFUSED' || error.code === 'ECONNABORTED'
-        ? 'Der Server ist nicht erreichbar. Bitte stellen Sie sicher, dass der Backend-Server läuft und erreichbar ist.'
-        : `Verbindungsfehler: ${error.message}`;
+      console.error('Connection check failed:', {
+        code: error.code,
+        message: error.message,
+        url: API_BASE_URL,
+        response: error.response,
+        request: error.request
+      });
+      
+      let message;
+      if (error.code === 'ERR_CONNECTION_REFUSED') {
+        message = `Der Server unter ${API_BASE_URL} ist nicht erreichbar. Bitte stellen Sie sicher, dass der Backend-Server auf Port 8080 läuft.`;
+      } else if (error.code === 'ECONNABORTED') {
+        message = `Zeitüberschreitung beim Verbindungsversuch zu ${API_BASE_URL}`;
+      } else if (error.response) {
+        message = `Server antwortet mit Fehler: ${error.response.status} ${error.response.statusText}`;
+      } else {
+        message = `Verbindungsfehler: ${error.message}`;
+      }
       throw new Error(message);
     }
   },
