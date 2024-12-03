@@ -1,13 +1,31 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080/api/invoices';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api/invoices';
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 5000 // 5 seconds
+  timeout: 10000, // 10 seconds
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
 });
+
+// Add response interceptor
+axiosInstance.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.code === 'ECONNABORTED') {
+      throw new Error('Die Verbindung zum Server wurde wegen Zeitüberschreitung abgebrochen.');
+    }
+    if (error.code === 'ERR_NETWORK' || error.code === 'ERR_CONNECTION_REFUSED') {
+      throw new Error('Keine Verbindung zum Server möglich. Bitte überprüfen Sie, ob der Server läuft.');
+    }
+    throw error;
+  }
+);
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 

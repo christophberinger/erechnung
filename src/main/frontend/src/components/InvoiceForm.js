@@ -90,9 +90,17 @@ export const InvoiceForm = () => {
       setInvoice(initialState); // Reset form
     } catch (error) {
       console.error('Error creating invoice:', error);
-      const errorMessage = error.message || 
-                          error.response?.data?.message || 
-                          'Fehler beim Speichern der Rechnung. Bitte überprüfen Sie Ihre Eingaben.';
+      let errorMessage;
+      
+      if (error.code === 'ERR_NETWORK' || error.code === 'ERR_CONNECTION_REFUSED') {
+        errorMessage = 'Keine Verbindung zum Server möglich. Bitte überprüfen Sie, ob der Server läuft.';
+      } else if (error.code === 'ECONNABORTED') {
+        errorMessage = 'Die Anfrage wurde wegen Zeitüberschreitung abgebrochen.';
+      } else {
+        errorMessage = error.message || 
+                      error.response?.data?.message || 
+                      'Fehler beim Speichern der Rechnung. Bitte überprüfen Sie Ihre Eingaben.';
+      }
       setSnackbar({
         open: true,
         message: errorMessage,
