@@ -55,19 +55,28 @@ public class RechnungController {
             System.err.println("Database schema error: " + e.getMessage());
             e.printStackTrace();
             
-            // Extract the root cause for better error reporting
+            // Extract detailed error information
             Throwable rootCause = e;
             while (rootCause.getCause() != null) {
                 rootCause = rootCause.getCause();
             }
             
+            String sqlState = e.getSQLException().getSQLState();
+            String detailedMessage = String.format(
+                "SQL State: %s, Error Code: %d, Message: %s",
+                sqlState,
+                e.getSQLException().getErrorCode(),
+                rootCause.getMessage()
+            );
+            
             java.util.Map<String, Object> errorResponse = new java.util.HashMap<>();
             errorResponse.put("status", "error");
             errorResponse.put("timestamp", new java.util.Date());
-            errorResponse.put("message", "Database schema error - The required database tables may not exist");
-            errorResponse.put("details", rootCause.getMessage());
+            errorResponse.put("message", "Database schema error - Tables not properly initialized");
+            errorResponse.put("details", detailedMessage);
             errorResponse.put("sql", e.getSQL());
-            errorResponse.put("suggestion", "Please ensure the database schema is properly initialized");
+            errorResponse.put("sqlState", sqlState);
+            errorResponse.put("suggestion", "Database tables need to be created. Please run the schema initialization script.");
             
             return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)

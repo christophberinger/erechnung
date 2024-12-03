@@ -97,8 +97,15 @@ export const invoiceService = {
       if (response.data && response.data.status === 'ok') {
         console.log('Connection check successful:', response.data.message);
         return true;
+      } else if (response.data && response.data.status === 'error') {
+        console.error('Connection check failed:', response.data);
+        let errorMessage = response.data.message;
+        if (response.data.suggestion) {
+          errorMessage += '\n' + response.data.suggestion;
+        }
+        throw new Error(errorMessage);
       } else {
-        throw new Error(response.data?.message || 'Unexpected server response');
+        throw new Error('Unexpected server response format');
       }
     } catch (error) {
       console.error('Connection check failed:', {
