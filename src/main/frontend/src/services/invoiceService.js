@@ -66,21 +66,35 @@ export const invoiceService = {
     }
   },
 
-  getAllInvoices: () => 
-    withRetry(() => axiosInstance.get('')).catch(handleError),
+  getAllInvoices: async () => {
+    const response = await withRetry(() => axiosInstance.get('')).catch(handleError);
+    return response.data;
+  },
 
-  getInvoiceById: (id) => 
-    withRetry(() => axiosInstance.get(`/${id}`)).catch(handleError),
+  getInvoiceById: async (id) => {
+    const response = await withRetry(() => axiosInstance.get(`/${id}`)).catch(handleError);
+    return response.data;
+  },
 
-  createInvoice: (invoice) => 
-    withRetry(() => axiosInstance.post('', invoice)).catch(handleError),
+  createInvoice: async (invoice) => {
+    const response = await withRetry(() => axiosInstance.post('', invoice)).catch(handleError);
+    return response.data;
+  },
 
-  updateInvoice: (id, invoice) => 
-    withRetry(() => axiosInstance.put(`/${id}`, invoice)).catch(handleError),
+  updateInvoice: async (id, invoice) => {
+    const response = await withRetry(() => axiosInstance.put(`/${id}`, invoice)).catch(handleError);
+    return response.data;
+  },
 
-  deleteInvoice: (id) => 
-    withRetry(() => axiosInstance.delete(`/${id}`)).catch(handleError),
+  deleteInvoice: async (id) => {
+    await withRetry(() => axiosInstance.delete(`/${id}`)).catch(handleError);
+    return true;
+  },
 
-  downloadPdf: (id) => 
-    withRetry(() => axiosInstance.get(`/${id}/pdf`, { responseType: 'blob' })).catch(handleError)
+  downloadPdf: async (id) => {
+    const response = await withRetry(() => 
+      axiosInstance.get(`/${id}/pdf`, { responseType: 'blob' })
+    ).catch(handleError);
+    return response.data;
+  }
 };

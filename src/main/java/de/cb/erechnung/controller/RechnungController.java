@@ -113,12 +113,20 @@ public class RechnungController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Rechnung> updateRechnung(@PathVariable Long id, @RequestBody Rechnung rechnung) {
-        if (!rechnungRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> updateRechnung(@PathVariable Long id, @RequestBody Rechnung rechnung) {
+        try {
+            if (!rechnungRepository.existsById(id)) {
+                return ResponseEntity.notFound().build();
+            }
+            rechnung.setId(id);
+            Rechnung updated = rechnungRepository.save(rechnung);
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("Fehler beim Aktualisieren der Rechnung: " + e.getMessage()));
         }
-        rechnung.setId(id);
-        return ResponseEntity.ok(rechnungRepository.save(rechnung));
     }
 
     @DeleteMapping("/{id}")

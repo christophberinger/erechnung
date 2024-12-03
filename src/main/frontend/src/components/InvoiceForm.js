@@ -76,8 +76,8 @@ export const InvoiceForm = () => {
       };
       
       console.log('Submitting invoice:', formattedInvoice);
-      const response = await invoiceService.createInvoice(formattedInvoice);
-      console.log('Server response:', response);
+      const savedInvoice = await invoiceService.createInvoice(formattedInvoice);
+      console.log('Saved invoice:', savedInvoice);
       setSnackbar({
         open: true,
         message: 'Rechnung erfolgreich gespeichert',
