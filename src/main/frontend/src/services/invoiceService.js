@@ -100,9 +100,25 @@ export const invoiceService = {
       } else if (response.data && response.data.status === 'error') {
         console.error('Connection check failed:', response.data);
         let errorMessage = response.data.message;
-        if (response.data.suggestion) {
-          errorMessage += '\n' + response.data.suggestion;
+        
+        // Add detailed error information if available
+        if (response.data.details) {
+          errorMessage += '\nDetails: ' + response.data.details;
         }
+        
+        // Add suggestion if available
+        if (response.data.suggestion) {
+          errorMessage += '\n\nSuggestion: ' + response.data.suggestion;
+        }
+        
+        // Log additional technical details if available
+        if (response.data.sqlState || response.data.sql) {
+          console.debug('Technical details:', {
+            sqlState: response.data.sqlState,
+            sql: response.data.sql
+          });
+        }
+        
         throw new Error(errorMessage);
       } else {
         throw new Error('Unexpected server response format');

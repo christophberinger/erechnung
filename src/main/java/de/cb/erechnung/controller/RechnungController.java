@@ -51,7 +51,7 @@ public class RechnungController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
                 
-        } catch (org.hibernate.exception.SQLGrammarException e) {
+        } catch (org.hibernate.exception.SQLGrammarException | org.springframework.dao.InvalidDataAccessResourceUsageException e) {
             System.err.println("Database schema error: " + e.getMessage());
             e.printStackTrace();
             
@@ -61,12 +61,22 @@ public class RechnungController {
                 rootCause = rootCause.getCause();
             }
             
-            String sqlState = e.getSQLException().getSQLState();
+            String sqlState = null;
+            int errorCode = 0;
+            String sql = null;
+            
+            if (e instanceof org.hibernate.exception.SQLGrammarException) {
+                org.hibernate.exception.SQLGrammarException sqlEx = (org.hibernate.exception.SQLGrammarException) e;
+                sqlState = sqlEx.getSQLException().getSQLState();
+                errorCode = sqlEx.getSQLException().getErrorCode();
+                sql = sqlEx.getSQL();
+            }
+            
             String detailedMessage = String.format(
-                "SQL State: %s, Error Code: %d, Message: %s",
-                sqlState,
-                e.getSQLException().getErrorCode(),
-                rootCause.getMessage()
+                "Database Error: %s%s%s",
+                rootCause.getMessage(),
+                sqlState != null ? String.format(" (SQL State: %s, Error Code: %d)", sqlState, errorCode) : "",
+                sql != null ? String.format(" [SQL: %s]", sql) : ""
             );
             
             java.util.Map<String, Object> errorResponse = new java.util.HashMap<>();
@@ -74,9 +84,13 @@ public class RechnungController {
             errorResponse.put("timestamp", new java.util.Date());
             errorResponse.put("message", "Database schema error - Tables not properly initialized");
             errorResponse.put("details", detailedMessage);
-            errorResponse.put("sql", e.getSQL());
-            errorResponse.put("sqlState", sqlState);
-            errorResponse.put("suggestion", "Database tables need to be created. Please run the schema initialization script.");
+            if (sqlState != null) {
+                errorResponse.put("sqlState", sqlState);
+            }
+            if (sql != null) {
+                errorResponse.put("sql", sql);
+            }
+            errorResponse.put("suggestion", "Database tables need to be created. Please ensure the database schema is properly initialized and all required tables exist.");
             
             return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
