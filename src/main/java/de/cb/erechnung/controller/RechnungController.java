@@ -80,9 +80,30 @@ public class RechnungController {
                 rechnung.setWaehrung("EUR"); // Default to EUR if not specified
             }
             
-            // Parse amount if it's a string
-            if (rechnung.getBetrag() != null && rechnung.getBetrag().scale() > 2) {
-                rechnung.setBetrag(rechnung.getBetrag().setScale(2, java.math.RoundingMode.HALF_UP));
+            if (rechnung.getFaelligkeitsDatum() == null) {
+                return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse("Fälligkeitsdatum ist erforderlich"));
+            }
+
+            // Validate and format amount
+            try {
+                if (rechnung.getBetrag() != null) {
+                    rechnung.setBetrag(rechnung.getBetrag().setScale(2, java.math.RoundingMode.HALF_UP));
+                }
+            } catch (ArithmeticException e) {
+                return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse("Ungültiges Betragsformat"));
+            }
+
+            // Validate IBAN if provided
+            if (rechnung.getIban() != null && !rechnung.getIban().trim().isEmpty()) {
+                if (!rechnung.getIban().matches("[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}")) {
+                    return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorResponse("Ungültiges IBAN-Format"));
+                }
             }
 
             Rechnung saved = rechnungRepository.save(rechnung);

@@ -29,7 +29,9 @@ export const InvoiceForm = () => {
     kundenLand: 'DE',
     kundenUstId: '',
     faelligkeitsDatum: '',
-    zahlungsReferenz: ''
+    zahlungsReferenz: '',
+    iban: '',
+    bic: ''
   };
 
   const [invoice, setInvoice] = useState(initialState);
@@ -68,11 +70,13 @@ export const InvoiceForm = () => {
       // Format data before sending
       const formattedInvoice = {
         ...invoice,
-        betrag: parseFloat(invoice.betrag || 0).toFixed(2),
+        betrag: Number(parseFloat(invoice.betrag || 0).toFixed(2)),
         datum: invoice.datum ? new Date(invoice.datum).toISOString().split('T')[0] : null,
         faelligkeitsDatum: invoice.faelligkeitsDatum ? 
           new Date(invoice.faelligkeitsDatum).toISOString().split('T')[0] : null,
-        waehrung: invoice.waehrung || 'EUR'
+        waehrung: invoice.waehrung || 'EUR',
+        iban: invoice.iban?.trim().toUpperCase(),
+        bic: invoice.bic?.trim().toUpperCase()
       };
       
       console.log('Submitting invoice:', formattedInvoice);
@@ -278,6 +282,26 @@ export const InvoiceForm = () => {
               name="zahlungsReferenz"
               value={invoice.zahlungsReferenz}
               onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label="IBAN"
+              name="iban"
+              value={invoice.iban || ''}
+              onChange={handleChange}
+              inputProps={{ style: { textTransform: 'uppercase' } }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label="BIC"
+              name="bic"
+              value={invoice.bic || ''}
+              onChange={handleChange}
+              inputProps={{ style: { textTransform: 'uppercase' } }}
             />
           </Grid>
 
