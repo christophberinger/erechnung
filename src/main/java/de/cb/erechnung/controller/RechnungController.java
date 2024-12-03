@@ -22,7 +22,7 @@ public class RechnungController {
     @Autowired
     private RechnungRepository rechnungRepository;
 
-    @GetMapping("")
+    @GetMapping("/")
     public ResponseEntity<List<Rechnung>> getAllRechnungen() {
         try {
             List<Rechnung> rechnungen = rechnungRepository.findAll();
