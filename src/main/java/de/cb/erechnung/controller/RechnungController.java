@@ -37,7 +37,7 @@ public class RechnungController {
     @PostMapping
     public ResponseEntity<?> createRechnung(@RequestBody Rechnung rechnung) {
         try {
-            // Basic validation
+            // Validate required fields
             if (rechnung.getRechnungsNummer() == null || rechnung.getRechnungsNummer().trim().isEmpty()) {
                 return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -53,7 +53,25 @@ public class RechnungController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body(new ErrorResponse("Rechnungsdatum ist erforderlich"));
             }
+            if (rechnung.getLieferantName() == null || rechnung.getLieferantName().trim().isEmpty()) {
+                return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse("Lieferant Name ist erforderlich"));
+            }
+            if (rechnung.getKundenName() == null || rechnung.getKundenName().trim().isEmpty()) {
+                return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse("Kunde Name ist erforderlich"));
+            }
+            if (rechnung.getWaehrung() == null || rechnung.getWaehrung().trim().isEmpty()) {
+                rechnung.setWaehrung("EUR"); // Default to EUR if not specified
+            }
             
+            // Parse amount if it's a string
+            if (rechnung.getBetrag() != null && rechnung.getBetrag().scale() > 2) {
+                rechnung.setBetrag(rechnung.getBetrag().setScale(2, java.math.RoundingMode.HALF_UP));
+            }
+
             Rechnung saved = rechnungRepository.save(rechnung);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
         } catch (Exception e) {

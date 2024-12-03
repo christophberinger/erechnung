@@ -57,10 +57,11 @@ export const InvoiceForm = () => {
       // Format data before sending
       const formattedInvoice = {
         ...invoice,
-        betrag: Number(invoice.betrag).toFixed(2),
-        datum: new Date(invoice.datum).toISOString().split('T')[0],
+        betrag: parseFloat(invoice.betrag || 0).toFixed(2),
+        datum: invoice.datum ? new Date(invoice.datum).toISOString().split('T')[0] : null,
         faelligkeitsDatum: invoice.faelligkeitsDatum ? 
-          new Date(invoice.faelligkeitsDatum).toISOString().split('T')[0] : null
+          new Date(invoice.faelligkeitsDatum).toISOString().split('T')[0] : null,
+        waehrung: invoice.waehrung || 'EUR'
       };
       
       const response = await invoiceService.createInvoice(formattedInvoice);
