@@ -36,23 +36,62 @@ public class RechnungController {
     @GetMapping("/check")
     public ResponseEntity<?> checkConnection() {
         try {
-            // Check if database is accessible
-            long count = rechnungRepository.count();
+            // Try a simple database query first
+            boolean tableExists = rechnungRepository.count() >= 0;
+            System.out.println("Database connection check - Table exists: " + tableExists);
+            
             java.util.Map<String, Object> response = new java.util.HashMap<>();
             response.put("status", "ok");
             response.put("timestamp", new java.util.Date());
             response.put("message", "Backend server is running and database is accessible");
-            response.put("recordCount", count);
+            response.put("databaseStatus", "connected");
+            response.put("tableStatus", tableExists ? "exists" : "not found");
             
             return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
-        } catch (Exception e) {
+                
+        } catch (org.hibernate.exception.SQLGrammarException e) {
+            System.err.println("Database schema error: " + e.getMessage());
             e.printStackTrace();
+            
             java.util.Map<String, Object> errorResponse = new java.util.HashMap<>();
             errorResponse.put("status", "error");
             errorResponse.put("timestamp", new java.util.Date());
-            errorResponse.put("message", "Database connection error: " + e.getMessage());
+            errorResponse.put("message", "Database schema error - table might not exist");
+            errorResponse.put("details", e.getSQLException().getMessage());
+            errorResponse.put("sql", e.getSQL());
+            
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(errorResponse);
+                
+        } catch (org.hibernate.exception.JDBCConnectionException e) {
+            System.err.println("Database connection error: " + e.getMessage());
+            e.printStackTrace();
+            
+            java.util.Map<String, Object> errorResponse = new java.util.HashMap<>();
+            errorResponse.put("status", "error");
+            errorResponse.put("timestamp", new java.util.Date());
+            errorResponse.put("message", "Cannot connect to database");
+            errorResponse.put("details", e.getSQLException().getMessage());
+            
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(errorResponse);
+                
+        } catch (Exception e) {
+            System.err.println("Unexpected error during connection check: " + e.getMessage());
+            e.printStackTrace();
+            
+            java.util.Map<String, Object> errorResponse = new java.util.HashMap<>();
+            errorResponse.put("status", "error");
+            errorResponse.put("timestamp", new java.util.Date());
+            errorResponse.put("message", "Unexpected error during database check");
+            errorResponse.put("details", e.getMessage());
+            errorResponse.put("type", e.getClass().getName());
             
             return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
